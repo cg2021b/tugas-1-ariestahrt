@@ -4,6 +4,9 @@ var gl = null;
 var group_vertices_obj_kanan = [];
 var group_vertices_obj_kiri = [];
 var scale = 0.1;
+let dy = 0;
+let speed = 0;
+let isPause = false;
 
 // OBJEK DARI TAMPAK DEPAN
 
@@ -93,6 +96,33 @@ let vertices_key_lamp_atas = [
 
 let vertices_key_lamp_bawah = math_TransformByY(0.8, vertices_key_lamp_atas, 0, 5);
 
+let vertices_lubang_atas_kiri = [
+    -0.04, -0.86,		0.0,0.0,0.0, // J1
+    -0.05,-0.9,  	    0.0,0.0,0.0, // K1
+    0.0,-0.85,	        0.0,0.0,0.0, // I1
+    0.0,-0.9,	        0.0,0.0,0.0, // N1
+];
+
+let vertices_lubang_bawah_kiri = [
+    -0.05,-0.9,  	    0.0,0.0,0.0, // K1
+    -0.04,-0.94,	        0.0,0.0,0.0, // L1
+    0.0,-0.9,	        0.0,0.0,0.0, // N1
+    0.0,-0.95,	        0.0,0.0,0.0, // M1
+];
+
+let vertices_lubang_atas_kanan = [
+    -0.04*-1, -0.86,		0.0,0.0,0.0, // J1
+    -0.05*-1,-0.9,  	    0.0,0.0,0.0, // K1
+    0.0*-1,-0.85,	        0.0,0.0,0.0, // I1
+    0.0*-1,-0.9,	        0.0,0.0,0.0, // N1
+];
+
+let vertices_lubang_bawah_kanan = [
+    -0.05*-1,-0.9,  	    0.0,0.0,0.0, // K1
+    -0.04*-1,-0.94,	    0.0,0.0,0.0, // L1
+    0.0*-1,-0.9,	        0.0,0.0,0.0, // N1
+    0.0*-1,-0.95,	        0.0,0.0,0.0, // M1
+];
 
 group_vertices_obj_kanan.push([...vertices_box_bawah]);
 group_vertices_obj_kanan.push([...vertices_box_atas]);
@@ -107,6 +137,10 @@ group_vertices_obj_kanan.push([...vertices_bantalan_switch_kanan]);
 group_vertices_obj_kanan.push([...vertices_switch_peer]);
 group_vertices_obj_kanan.push([...vertices_key_lamp_atas]);
 group_vertices_obj_kanan.push([...vertices_key_lamp_bawah]);
+group_vertices_obj_kanan.push([...vertices_lubang_atas_kiri]);
+group_vertices_obj_kanan.push([...vertices_lubang_bawah_kiri]);
+group_vertices_obj_kanan.push([...vertices_lubang_atas_kanan]);
+group_vertices_obj_kanan.push([...vertices_lubang_bawah_kanan]);
 
 group_vertices_obj_kanan.forEach((element) => {
 	scaleVertices(element, 0, 5);        
@@ -122,7 +156,7 @@ group_vertices_obj_kiri.push([...vertices_key_kanan]);
 group_vertices_obj_kiri.push([...vertices_bantalan_switch_depan]);
 group_vertices_obj_kiri.push([...vertices_bantalan_switch_kiri]);
 group_vertices_obj_kiri.push([...vertices_bantalan_switch_kanan]);
-group_vertices_obj_kiri.push([...vertices_switch_peer]);
+// group_vertices_obj_kiri.push([...vertices_switch_peer]);
 group_vertices_obj_kiri.push(math_TranslateByY(0.6, vertices_key_lamp_atas, 0,5), 0, 5);
 
 group_vertices_obj_kiri.forEach((element) => {
@@ -283,14 +317,6 @@ function translate(group_vertices){
     });
 }
 
-$( document ).ready(function() {
-    var slider_x_translate = document.getElementById('translate_x');
-    var slider_y_translate = document.getElementById('translate_y');
-
-    slider_x_translate.addEventListener('input', translate);
-    slider_y_translate.addEventListener('input', translate);
-});
-
 function getHighestAndLowestVertices(vertices, offset, vertex_size){
 	let highest = -99999;
 	let lowest = 99999;
@@ -304,11 +330,32 @@ function getHighestAndLowestVertices(vertices, offset, vertex_size){
     return {high:highest, low:lowest};
 }
 
-let dy = 0;
-let speed = 0.0105;
+function resizeCanvasToDisplaySize(canvas) {
+    // Lookup the size the browser is displaying the canvas in CSS pixels.
+    const displayWidth  = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
+   
+    // Check if the canvas is not the same size.
+    const needResize = canvas.width  !== displayWidth ||
+                       canvas.height !== displayHeight;
+   
+    if (needResize) {
+      // Make the canvas the same size
+      canvas.width  = displayWidth;
+      canvas.height = displayHeight;
+    }
+   
+    return needResize;
+}
+
 function main() {
-    var canvas = document.getElementById("canvas");
+    // Get Control Variable
+    if(isPause) return;
+    
+    var canvas = document.getElementById("webgl-canvas");
     gl = canvas.getContext("webgl");
+    resizeCanvasToDisplaySize(canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // definisi vertex
     var vertexShaderCode = `
@@ -395,7 +442,41 @@ function main() {
     group_vertices_obj_kiri.forEach((element) => {
         drawShape(gl, element, shaderProgram);
     });
-	requestAnimationFrame(main);
+	// requestAnimationFrame(main);
 }
 
-main();
+$(document).ready(function(){
+    let FPS = parseFloat($('#fps').val());
+    let timing = 1000.0/FPS;
+    speed = parseFloat($('#speed').val());
+
+    $('#speed').on('input', function(){
+        speed = parseFloat($('#speed').val());
+    });
+
+    $('#pause').on('click', function(){
+        if(isPause){
+            $('#pause').removeClass('hover:bg-blue-500');
+            $('#pause').removeClass('text-blue-700');
+            $('#pause').removeClass('border-blue-500');
+            
+            $('#pause').addClass('hover:bg-red-500');
+            $('#pause').addClass('text-red-700');
+            $('#pause').addClass('border-red-500');
+
+            $('#pause').html('Pause');
+        }else{
+            $('#pause').removeClass('hover:bg-red-500');
+            $('#pause').removeClass('text-red-700');
+            $('#pause').removeClass('border-red-500');
+
+            $('#pause').addClass('hover:bg-blue-500');
+            $('#pause').addClass('text-blue-700');
+            $('#pause').addClass('border-blue-500');
+
+            $('#pause').html('Continue');
+        }
+        isPause = !isPause;
+    });
+    setInterval(main, timing);
+});
