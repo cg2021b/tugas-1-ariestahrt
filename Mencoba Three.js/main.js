@@ -227,8 +227,8 @@ function animate () {
 
     // HemisphereLight
     {
-        const skyColor = 0xB1E1FF;  // light blue
-        const groundColor = 0xB97A20;  // brownish orange
+        const skyColor = generateRandomColor();  // light blue
+        const groundColor = generateRandomColor();  // brownish orange
         const intensity = 1;
         const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
         
@@ -251,15 +251,15 @@ function animate () {
             return light;
         }
 
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [-25,50,25]));
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [25,50,25]));
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [-25,50,-25]));
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [25,50,-25]));
+        light_objects.PointLight.members.push(PointLightFactory(0xfcba03, 1, [-25,50,25]));
+        light_objects.PointLight.members.push(PointLightFactory(0xc300ff, 1, [25,50,25]));
+        light_objects.PointLight.members.push(PointLightFactory(0xffffff, 1, [-25,50,-25]));
+        light_objects.PointLight.members.push(PointLightFactory(0xfcba03, 1, [25,50,-25]));
 
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [-30,0,30]));
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [30,0,30]));
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [-30,0,-30]));
-        light_objects.PointLight.members.push(PointLightFactory(0xFFFFFF, 0.3, [30,0,-30]));
+        light_objects.PointLight.members.push(PointLightFactory(generateRandomColor(), 1, [-30,0,30]));
+        light_objects.PointLight.members.push(PointLightFactory(generateRandomColor(), 1, [30,0,30]));
+        light_objects.PointLight.members.push(PointLightFactory(generateRandomColor(), 1, [-30,0,-30]));
+        light_objects.PointLight.members.push(PointLightFactory(generateRandomColor(), 1, [30,0,-30]));
     }
 
     // Spotlights
@@ -270,8 +270,8 @@ function animate () {
             light.target.position.set(position[0], position[1], position[2]);
             return light;
         }
-        light_objects.Spotlights.members.push(SpotLightFactory(0xFFFFFF, 1, [-25,50,25], [0,0,0]));
-        light_objects.Spotlights.members.push(SpotLightFactory(0xFFFFFF, 1, [25,50,25], [0,0,0]));
+        light_objects.Spotlights.members.push(SpotLightFactory(generateRandomColor(), 1, [-25,50,25], [0,0,0]));
+        light_objects.Spotlights.members.push(SpotLightFactory(generateRandomColor(), 1, [25,50,25], [0,0,0]));
     }
 
     setLight('DirectionalLight', true);
@@ -480,6 +480,61 @@ function animate () {
         objects["torusknot"] = obj;
     }
 
+    // Cone Geom
+    {
+        const radius = 2;
+        const height = 3;
+        const radialSegments = 16;
+
+        const geometry = new THREE.ConeGeometry(radius, height, radialSegments);
+        const material = new THREE.MeshPhongMaterial({color: generateRandomColor()});
+        const obj = new THREE.Mesh(geometry, material);
+        obj.position.set(0,7,0);
+
+        scene.add(obj);
+        objects["cone_geometry"] = obj;
+    }
+
+    // CylinderGeometry yg ngelilingin Cone
+    {
+        const radiusTop = 1;  
+        const radiusBottom = 1;  
+        const height = 1;
+        const radialSegments = 12;  
+        const geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, height, radialSegments);
+        const material = new THREE.MeshPhongMaterial({color: generateRandomColor()});
+        const obj = new THREE.Mesh(geometry, material);
+        obj.position.set(5,7,0);
+
+        scene.add(obj);
+        objects["cylinder_geometry"] = obj;
+    }
+
+    // Primogem lagi
+    {
+        const geometry = new THREE.OctahedronGeometry(2);
+        const material = new THREE.MeshPhongMaterial({color: generateRandomColor()});
+        material.wireframe = true;
+        const obj = new THREE.Mesh(geometry, material);
+                
+        obj.position.set(7,7,0);
+        scene.add(obj);
+
+        objects["primogem_planet"] = obj;
+    }
+
+    // Primogem mini
+    {
+        const geometry = new THREE.OctahedronGeometry(1);
+        const material = new THREE.MeshPhongMaterial({color: generateRandomColor()});
+        material.wireframe = false;
+        const obj = new THREE.Mesh(geometry, material);
+                
+        obj.position.set(8,7,0);
+        scene.add(obj);
+
+        objects["primogem_moon"] = obj;
+    }
 
     function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
@@ -526,10 +581,26 @@ function animate () {
 
         objects["tetrahedron"].position.x = 15 * Math.cos( t + 3 );
         objects["tetrahedron"].position.z = 15 * Math.sin( t + 3 );
-
+        objects["tetrahedron"].rotation.z += 0.02;
         objects["torusknot"].position.x = objects["tetrahedron"].position.x + 5 * -1* Math.cos( t2 - 0.01 );
         objects["torusknot"].position.z = objects["tetrahedron"].position.z + 5 * Math.sin( t2 - 0.01 );
 
+        // cone_geom
+        objects["cone_geometry"].position.x = 15 * Math.cos( t + 1.5 );
+        objects["cone_geometry"].position.z = 15 * Math.sin( t + 1.5 );
+        objects["cone_geometry"].rotation.z += 0.01;
+
+        objects["cylinder_geometry"].position.x = objects["cone_geometry"].position.x + 5 * Math.cos( t2 - 0.01 );
+        objects["cylinder_geometry"].position.z = objects["cone_geometry"].position.z + 5 * Math.sin( t2 - 0.01 );
+        objects["cylinder_geometry"].rotation.z += 0.01;
+
+        objects["primogem_planet"].position.x = 15 * Math.cos( t + 4.5 );
+        objects["primogem_planet"].position.z = 15 * Math.sin( t + 4.5 );
+        objects["primogem_planet"].rotation.z += 0.02;
+
+        objects["primogem_moon"].position.x = objects["primogem_planet"].position.x + 5 * Math.cos( t2 - 0.01 );
+        objects["primogem_moon"].position.z = objects["primogem_planet"].position.z + 5 * Math.sin( t2 - 0.01 );
+        objects["primogem_moon"].rotation.x += 0.02;
 
         // objects["lantai"].rotation.x += 0.01;
         // objects["lantai"].rotation.y += 0.01;
