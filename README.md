@@ -45,3 +45,12 @@ Buat obyek baru yang muncul diposisi dan warna secara random yang semakin lama s
 ### Hasil
 Adapun hasilnya dapat dilihat pada link berikut: [Tugas 3](https://cg2021b.github.io/tugas-1-ariestahrt/Tugas3/).
 Pada awal memasuki halaman, pengguna akan diminta untuk memasukan nilai MAX_PAIR_OBJECT yaitu banyak pasangan warna yang ada. Lalu pengguna dapat melakukan interaksi dengan menekan objek. Objek yang terpilih akan menampilkan wireframenya. Apabila dua objek yang dipilih berwarna sama, maka nilai skor akan ditambah 100, apabila memiliki warna berbeda maka nilai skor akan dikurang 10.
+
+## Tugas 4
+
+### Deskripsi Tugas
+Mencoba Three JS : Control, Texture, Panorama, Shadow, Fog, Loading model dan Realistic Reflective
+
+### Hasil
+- Control, Texture, Panorama, Fog, Realistic Reflection: [Tugas 4 - 1](https://cg2021b.github.io/tugas-1-ariestahrt/Tugas4/1.html).
+- Shadow & Loading Model: [Tugas 4 - 2](https://cg2021b.github.io/tugas-1-ariestahrt/Tugas4/2.html).
